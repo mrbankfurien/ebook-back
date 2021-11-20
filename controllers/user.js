@@ -59,7 +59,6 @@ exports.signup = (req,res,next) =>{
 														}
 														else
 														{
-															console.log(err);
 															res.json(
 															{
 																status : false ,
