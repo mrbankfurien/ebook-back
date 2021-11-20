@@ -9,7 +9,7 @@
 
 
 
-const bcrypt = require('bcrypts');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../dbase/config');
 
