@@ -75,12 +75,17 @@ exports.create = (req , res , next) =>{
 
 										if(!err)
 										{
+
+											connect.release() ;
+
+
 											res.json(
 											        {
 											  status : true ,
 											  error : "INSERT_SUCCESS" ,
 											  message : rows
 											        }) ;
+
 										}
 										else
 										{
@@ -153,12 +158,17 @@ exports.deleted = (req,res,next) =>{
 
 			if(!error)
 			{
+
+				connect.release() ;
+
+
 				res.json(
 							{
 								status : true ,
 								error : "DELETED_SUCCESS" ,
 								message : "..."
 							}) ;
+
 			}
 			else
 			{
@@ -205,12 +215,16 @@ exports.update = (req,res,next) =>{
 
 				else
 				{
+
+					connect.release() ;
+
 					res.json(
 							{
 								status : true ,
 								error : "UPDATE_SUCESS" ,
 								message : "..."
 							}) ;
+
 				}
 
 			}) ;
@@ -233,12 +247,16 @@ exports.getOnPost = (req,res,next)=>{
 
 			if(!error)
 			{
+
+				connect.release() ;
+
 				res.json(
 							{
 								status : true ,
 								error : "IS_FOUND" ,
 								message : rows
 							}) ;
+
 			}
 			else
 			{

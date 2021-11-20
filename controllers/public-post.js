@@ -36,6 +36,10 @@ exports.lovedPoster = (req,res,next) =>{
                         message : "Une erreur s'est produite , veuillez réessayer plutard."
                       })
                   }
+                  else
+                  {
+                      connect.release() ;
+                  }
 
 
               }) ;
@@ -105,12 +109,16 @@ exports.lovedPoster = (req,res,next) =>{
 
                   else
                   {
+
+                    connect.release() ;
+
                     res.json(
                       {
                         status : true ,
                         error : "UPDATE_SUCCESS" ,
                         message : '....'
                       }) ;
+
                   }
 
 
@@ -142,12 +150,16 @@ exports.user_poster = (req,res,next)=>{
 
         if(!err)
         {
+
+          connect.release() ;
+
           res.json(
                 {
                   status : true ,
                   counters : rows.length,
                   message : rows
                 }) ;
+
         }
         else
         {
@@ -328,13 +340,13 @@ exports.comment = (req,res,next) =>{
               {
                 status : false ,
                 error : "USER_ERROR" ,
-                message : "Impossible de valider votre commentaire, veuillez réessayer ." 
-              }) 
+                message : "Impossible de valider votre commentaire, veuillez réessayer ."
+              })
         }
 
         else
         {
-           
+
            connect.query('SELECT comment_counters FROM posters_counters WHERE id_poster_liked=?',[req.body.id],(err,rows)=>{
 
             data = 0 ;
@@ -350,8 +362,8 @@ exports.comment = (req,res,next) =>{
                       {
                         status : false ,
                         error : "USER_ERROR" ,
-                        message : "Impossible de valider votre commentaire, veuillez réessayer ." 
-                      }) 
+                        message : "Impossible de valider votre commentaire, veuillez réessayer ."
+                      })
                 }
 
                 else
@@ -365,8 +377,8 @@ exports.comment = (req,res,next) =>{
                             {
                               status : false ,
                               error : "USER_ERROR" ,
-                              message : "Impossible de valider votre commentaire, veuillez réessayer ." 
-                            }) 
+                              message : "Impossible de valider votre commentaire, veuillez réessayer ."
+                            })
                       }
                       else
                       {
@@ -374,8 +386,8 @@ exports.comment = (req,res,next) =>{
                             {
                               status : true ,
                               error : "INSERT_TRUE" ,
-                              message : "..." 
-                            }) 
+                              message : "..."
+                            })
                       }
                   }) ;
 

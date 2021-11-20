@@ -50,6 +50,8 @@ exports.signup = (req,res,next) =>{
 
 														if(!err)
 														{
+															connect.release() ;
+
 															res.json(
 															{
 																status : true ,
@@ -183,6 +185,8 @@ exports.login = (req,res,next) =>{
 							})
 						}
 
+						connect.release() ;
+
 						res.json({
 
 							status : true,
@@ -247,6 +251,8 @@ exports.reset = (req,res,next) =>{
 			{
 				if(user.length!=0)
 				{
+					connect.release() ;
+					
 					res.json(
 					{
 						status : true ,
