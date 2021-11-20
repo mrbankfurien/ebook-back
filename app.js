@@ -4,8 +4,6 @@ const userRoute = require('./routes/user');
 const posterRoute = require('./routes/poster');
 const posterPublicRoute = require('./routes/public-post');
 
-//require('dotenv').config() ;
-
 
 const app = express() ;
 
