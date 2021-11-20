@@ -9,7 +9,7 @@
 
 
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypts');
 const jwt = require('jsonwebtoken');
 const pool = require('../dbase/config');
 
@@ -42,39 +42,42 @@ exports.signup = (req,res,next) =>{
 									{
 										if(rows.length==0)
 										{
-											bcrypt.hash(req.body.passwords,10).
-											then(hash=>{
+											bcrypt.genSalt(10,(err,salt)=>{
+												bcrypt.hash(req.body.passwords,salt).
+												then(hash=>{
 
-												connect.query('INSERT INTO users SET username = ? , email = ? , number = ? , pseudonyme = ? , gender = ? , passwords = ? , token = ? , add_date = ?' ,
-												[req.body.username,req.body.email,req.body.numbers,req.body.pseudonyme,req.body.gender , hash , req.body.token ,new Date()] , (err , rows)=>{
+													connect.query('INSERT INTO users SET username = ? , email = ? , number = ? , pseudonyme = ? , gender = ? , passwords = ? , token = ? , add_date = ?' ,
+													[req.body.username,req.body.email,req.body.numbers,req.body.pseudonyme,req.body.gender , hash , req.body.token ,new Date()] , (err , rows)=>{
 
 
-														if(!err)
-														{
-															res.json(
+															if(!err)
 															{
-																status : true ,
-																error : "INSERT_SUCCESS" ,
-																message : " Vous avez  étè enregisté avec success, connectez-vous et profité pleinement des differents avantages de Banks Ebook ."
-															}) ;
-														}
-														else
-														{
-															res.json(
+																res.json(
+																{
+																	status : true ,
+																	error : "INSERT_SUCCESS" ,
+																	message : " Vous avez  étè enregisté avec success, connectez-vous et profité pleinement des differents avantages de Banks Ebook ."
+																}) ;
+															}
+															else
 															{
-																status : false ,
-																error : "INSERT_ERROR" ,
-																message : "Une erreur s'est produite lors de votre enregistrement, veuillez réessayer plutard."
-															}) ;
-														}
+																res.json(
+																{
+																	status : false ,
+																	error : "INSERT_ERROR" ,
+																	message : "Une erreur s'est produite lors de votre enregistrement, veuillez réessayer plutard."
+																}) ;
+															}
 
-												}) ;
+													}) ;
 
-											}).catch(err => res.json( {
-												status : false ,
-												error : "HASH_ERROR",
-												message : "Erreur lors du cryptage du mot de passe "
-											})) ;
+												}).catch(err => res.json( {
+													status : false ,
+													error : "HASH_ERROR",
+													message : "Erreur lors du cryptage du mot de passe "
+												})) ;
+											})
+
 										}
 										else
 										{
