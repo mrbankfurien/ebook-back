@@ -38,7 +38,8 @@ const errorHandler = error => {
   }
 };
 
-// 7sjVqvpNZ?Gt6k:mdp heurokou
+// 7sjVqvpNZ?Gt6:mdp heurokou
+// link panelhoster : furien-ebook-apps.go.yj.fr , email : mylife , mdp : pL2K#J!.Hpn4LHV
 
 const server = http.createServer(app);
 

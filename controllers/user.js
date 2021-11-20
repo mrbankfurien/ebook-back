@@ -4,7 +4,7 @@
 	mdp : BanksFurien@5166
 */
 
-
+// remotemysql :mdp : WwwHtaZ$@2R6gE2 , email : developersmens
 
 
 
@@ -18,7 +18,7 @@ const pool = require('../dbase/config');
 exports.signup = (req,res,next) =>{
 
 	pool.getConnection((err,connect) =>{
-		
+
 		if(err) res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
