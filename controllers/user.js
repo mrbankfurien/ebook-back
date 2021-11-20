@@ -43,8 +43,7 @@ exports.signup = (req,res,next) =>{
 										if(rows.length==0)
 										{
 											bcrypt.genSalt(10,(err,salt)=>{
-												bcrypt.hash(req.body.passwords,salt).
-												then(hash=>{
+												bcrypt.hash(req.body.passwords,salt,(err,hash)=>{
 
 													connect.query('INSERT INTO users SET username = ? , email = ? , number = ? , pseudonyme = ? , gender = ? , passwords = ? , token = ? , add_date = ?' ,
 													[req.body.username,req.body.email,req.body.numbers,req.body.pseudonyme,req.body.gender , hash , req.body.token ,new Date()] , (err , rows)=>{
@@ -71,14 +70,7 @@ exports.signup = (req,res,next) =>{
 
 													}) ;
 
-												}).catch(err => res.json( {
-													console.log('erreur to hash');
-													status : false ,
-													error : "HASH_ERROR",
-													message : "Erreur lors du cryptage du mot de passe "
-												})) ;
-											})
-
+												});
 										}
 										else
 										{
