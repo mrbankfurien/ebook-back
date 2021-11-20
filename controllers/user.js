@@ -71,7 +71,8 @@ exports.signup = (req,res,next) =>{
 													}) ;
 
 												});
-										}
+										}) ;
+									}
 										else
 										{
 											res.json(
