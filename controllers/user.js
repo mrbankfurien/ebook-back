@@ -72,6 +72,7 @@ exports.signup = (req,res,next) =>{
 													}) ;
 
 												}).catch(err => res.json( {
+													console.log('erreur to hash');
 													status : false ,
 													error : "HASH_ERROR",
 													message : "Erreur lors du cryptage du mot de passe "
