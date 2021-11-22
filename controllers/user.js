@@ -252,7 +252,7 @@ exports.reset = (req,res,next) =>{
 				if(user.length!=0)
 				{
 					connect.release() ;
-					
+
 					res.json(
 					{
 						status : true ,
