@@ -14,16 +14,20 @@ const jwt = require('jsonwebtoken');
 const pool = require('../dbase/config');
 
 
+
 exports.signup = (req,res,next) =>{
 
 	pool.getConnection((err,connect) =>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err,rows)=>{
+		else{
+			connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err,rows)=>{
 			if(!err)
 			{
 				if(rows.length==0)
@@ -50,8 +54,6 @@ exports.signup = (req,res,next) =>{
 
 														if(!err)
 														{
-															connect.release() ;
-
 															res.json(
 															{
 																status : true ,
@@ -142,6 +144,7 @@ exports.signup = (req,res,next) =>{
 					}) ;
 			}
 		})
+		}
 	}) ;
 
 } ;
@@ -151,13 +154,16 @@ exports.login = (req,res,next) =>{
 
 	pool.getConnection((err , connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
 
-		connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err , user)=>{
+		else{
+			connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err , user)=>{
 
 
 			if(err){
@@ -184,8 +190,6 @@ exports.login = (req,res,next) =>{
 								message : "Votre mot de passe est incorrect, veuillez réessayer ."
 							})
 						}
-
-						connect.release() ;
 
 						res.json({
 
@@ -221,6 +225,7 @@ exports.login = (req,res,next) =>{
 
 
 		}) ;
+		}
 
 	}) ;
 
@@ -230,12 +235,15 @@ exports.reset = (req,res,next) =>{
 
 	pool.getConnection((err,connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		connect.query('SELECT * FROM users WHERE email=?',[req.body.email],(err,user)=>{
+		else{
+			connect.query('SELECT * FROM users WHERE email=?',[req.body.email],(err,user)=>{
 
 			if(err)
 			{
@@ -251,8 +259,6 @@ exports.reset = (req,res,next) =>{
 			{
 				if(user.length!=0)
 				{
-					connect.release() ;
-
 					res.json(
 					{
 						status : true ,
@@ -272,6 +278,7 @@ exports.reset = (req,res,next) =>{
 			}
 
 		}) ;
+		}
 
 	})
 

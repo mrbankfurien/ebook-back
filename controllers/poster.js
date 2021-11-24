@@ -4,12 +4,15 @@ exports.all = (req,res,next) =>{
 
 	pool.getConnection((err,connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		connect.query('SELECT * FROM posters WHERE id_user=? and visibility=? ORDER BY id DESC',[req.params.userId,'Privé'],(err,rows)=>{
+		else{
+			connect.query('SELECT * FROM posters WHERE id_user=? and visibility=? ORDER BY id DESC',[req.params.userId,'Privé'],(err,rows)=>{
 
 			if(!err)
 			{
@@ -31,6 +34,7 @@ exports.all = (req,res,next) =>{
 			}
 
 		}) ;
+		}
 
 
 	}) ;
@@ -45,12 +49,15 @@ exports.create = (req , res , next) =>{
 
 	pool.getConnection((err,connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		if(req.body.visibility=='Public')
+		else{
+			if(req.body.visibility=='Public')
 		{
 			connect.query('INSERT INTO posters SET id_user=?,visibility=?,title=?,msg=?,status=?,unite=?,delais=?,addDate=?' ,
 			[req.body.userId,req.body.visibility,req.body.title,req.body.msg,status,unite,delais,new Date()], (err,new_poster_insert)=>{
@@ -75,17 +82,12 @@ exports.create = (req , res , next) =>{
 
 										if(!err)
 										{
-
-											connect.release() ;
-
-
 											res.json(
 											        {
 											  status : true ,
 											  error : "INSERT_SUCCESS" ,
 											  message : rows
 											        }) ;
-
 										}
 										else
 										{
@@ -140,6 +142,7 @@ exports.create = (req , res , next) =>{
 
 			} ) ;
 		}
+		}
 
 	}) ;
 
@@ -149,26 +152,24 @@ exports.deleted = (req,res,next) =>{
 
 	pool.getConnection((err,connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		connect.query('DELETE FROM posters WHERE id=?',[req.params.id],(error,starus)=>{
+		else{
+			connect.query('DELETE FROM posters WHERE id=?',[req.params.id],(error,starus)=>{
 
 			if(!error)
 			{
-
-				connect.release() ;
-
-
 				res.json(
 							{
 								status : true ,
 								error : "DELETED_SUCCESS" ,
 								message : "..."
 							}) ;
-
 			}
 			else
 			{
@@ -181,6 +182,7 @@ exports.deleted = (req,res,next) =>{
 			}
 
 		}) ;
+		}
 
 	}) ;
 
@@ -194,12 +196,15 @@ exports.update = (req,res,next) =>{
 
 	pool.getConnection((err,connect)=>{
 
-		if(err) res.status(400).
+		if(err) {
+			res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+		}
 
-		connect.query('UPDATE posters SET visibility=?,title=?,msg=?,status=?,unite=?,delais=? WHERE id=?',
+		else{
+			connect.query('UPDATE posters SET visibility=?,title=?,msg=?,status=?,unite=?,delais=? WHERE id=?',
 			[req.body.visibility,req.body.title,req.body.msg,status,unite,delais,req.params.id],
 			(error,status)=>{
 
@@ -215,19 +220,16 @@ exports.update = (req,res,next) =>{
 
 				else
 				{
-
-					connect.release() ;
-
 					res.json(
 							{
 								status : true ,
 								error : "UPDATE_SUCESS" ,
 								message : "..."
 							}) ;
-
 				}
 
 			}) ;
+		}
 	}) ;
 
 }
@@ -237,26 +239,25 @@ exports.getOnPost = (req,res,next)=>{
 	pool.getConnection((err,connect)=>{
 
 		if(err)
-			res.status(400).
+			{
+				res.status(400).
 			json({status : false ,
 				message : "Erreur de connection à la base de donnée" ,
 				error : "DB_ERROR"}) ;
+			}
 
-		connect.query('SELECT * FROM posters WHERE id=?',[req.params.id],(error,rows)=>{
+		else{
+			connect.query('SELECT * FROM posters WHERE id=?',[req.params.id],(error,rows)=>{
 
 
 			if(!error)
 			{
-
-				connect.release() ;
-
 				res.json(
 							{
 								status : true ,
 								error : "IS_FOUND" ,
 								message : rows
 							}) ;
-
 			}
 			else
 			{
@@ -270,6 +271,7 @@ exports.getOnPost = (req,res,next)=>{
 
 
 		}) ;
+		}
 	});
 
 }

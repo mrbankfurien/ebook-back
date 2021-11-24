@@ -6,12 +6,15 @@ exports.lovedPoster = (req,res,next) =>{
 
   pool.getConnection((err,connect)=>{
 
-    if(err) res.status(400).
+    if(err) {
+      res.status(400).
         json({status : false ,
           message : "Erreur de connection à la base de donnée" ,
           error : "DB_ERROR"}) ;
+    }
 
-    connect.query('SELECT * FROM poster_descrbile WHERE id_poster=? and id_user=?',[req.params.id,req.body.userId],(err,rows)=>{
+    else{
+      connect.query('SELECT * FROM poster_descrbile WHERE id_poster=? and id_user=?',[req.params.id,req.body.userId],(err,rows)=>{
 
       if(err) res.json(
               {
@@ -36,10 +39,6 @@ exports.lovedPoster = (req,res,next) =>{
                         message : "Une erreur s'est produite , veuillez réessayer plutard."
                       })
                   }
-                  else
-                  {
-                      connect.release() ;
-                  }
 
 
               }) ;
@@ -52,11 +51,11 @@ exports.lovedPoster = (req,res,next) =>{
               if(err)
                 {
                   res.json(
-    							  {
+                    {
                       status : false ,
                       error : "UPDATE_ERROR" ,
                       message : "Une erreur s'est produite , veuillez réessayer plutard."
-    							  })
+                    })
                 }
             }) ;
           }
@@ -109,16 +108,12 @@ exports.lovedPoster = (req,res,next) =>{
 
                   else
                   {
-
-                    connect.release() ;
-
                     res.json(
                       {
                         status : true ,
                         error : "UPDATE_SUCCESS" ,
                         message : '....'
                       }) ;
-
                   }
 
 
@@ -129,6 +124,8 @@ exports.lovedPoster = (req,res,next) =>{
           })
         }
     }) ;
+    }
+    
   }) ;
 
 } ;
@@ -138,28 +135,27 @@ exports.user_poster = (req,res,next)=>{
 
   pool.getConnection((err,connect)=>{
 
-    if(err) res.status(400).
+    if(err) {
+      res.status(400).
         json({status : false ,
           message : "Erreur de connection à la base de donnée" ,
           error : "DB_ERROR"}) ;
+    }
 
 
-      connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme , users.token ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and users.token=poster_descrbile.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
+      else{
+        connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme , users.token ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and users.token=poster_descrbile.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
 
 
 
         if(!err)
         {
-
-          connect.release() ;
-
           res.json(
                 {
                   status : true ,
                   counters : rows.length,
                   message : rows
                 }) ;
-
         }
         else
         {
@@ -172,6 +168,7 @@ exports.user_poster = (req,res,next)=>{
         }
 
       }) ;
+      }
 
   }) ;
 
@@ -182,12 +179,15 @@ exports.all_poster = (req,res,next) =>{
 
   pool.getConnection((err,connect)=>{
 
-      if(err) res.status(400).
-  			json({status : false ,
-  				message : "Erreur de connection à la base de donnée" ,
-  				error : "DB_ERROR"}) ;
+      if(err) {
+        res.status(400).
+        json({status : false ,
+          message : "Erreur de connection à la base de donnée" ,
+          error : "DB_ERROR"}) ;
+      }
 
-        connect.query('SELECT * FROM posters INNER JOIN users ON users.token=posters.id_user WHERE visibility=? ORDER BY posters.id DESC',['Public'],(error,rows)=>{
+        else{
+          connect.query('SELECT * FROM posters INNER JOIN users ON users.token=posters.id_user WHERE visibility=? ORDER BY posters.id DESC',['Public'],(error,rows)=>{
 
 
 
@@ -211,6 +211,7 @@ exports.all_poster = (req,res,next) =>{
           }
 
         }) ;
+        }
 
   }) ;
 
@@ -221,13 +222,16 @@ exports.members_poster = (req,res,next)=>{
 
   pool.getConnection((err,connect)=>{
 
-    if(err) res.status(400).
+    if(err) {
+      res.status(400).
         json({status : false ,
           message : "Erreur de connection à la base de donnée" ,
           error : "DB_ERROR"}) ;
+    }
 
 
-      connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme  , poster_descrbile.id_user ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and poster_descrbile.id_user!=users.token INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,allLikerPoster)=>{
+      else{
+        connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme  , poster_descrbile.id_user ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and poster_descrbile.id_user!=users.token INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,allLikerPoster)=>{
 
 
         currentUserToLiked  = [] ;
@@ -316,6 +320,7 @@ exports.members_poster = (req,res,next)=>{
 
 
       }) ;
+      }
 
   }) ;
 
@@ -327,12 +332,15 @@ exports.comment = (req,res,next) =>{
 
   pool.getConnection((err,connect)=>{
 
-      if(err) res.status(400).
+      if(err) {
+        res.status(400).
         json({status : false ,
           message : "Erreur de connection à la base de donnée" ,
           error : "DB_ERROR"}) ;
+      }
 
-      connect.query('INSERT INTO comment SET id_user=? , id_poster=? , msg=? , add_date=?',[req.body.userId,req.body.id,req.body.msg,new Date()],(err,rows)=>{
+      else{
+        connect.query('INSERT INTO comment SET id_user=? , id_poster=? , msg=? , add_date=?',[req.body.userId,req.body.id,req.body.msg,new Date()],(err,rows)=>{
 
         if(err)
         {
@@ -340,13 +348,13 @@ exports.comment = (req,res,next) =>{
               {
                 status : false ,
                 error : "USER_ERROR" ,
-                message : "Impossible de valider votre commentaire, veuillez réessayer ."
-              })
+                message : "Impossible de valider votre commentaire, veuillez réessayer ." 
+              }) 
         }
 
         else
         {
-
+           
            connect.query('SELECT comment_counters FROM posters_counters WHERE id_poster_liked=?',[req.body.id],(err,rows)=>{
 
             data = 0 ;
@@ -362,8 +370,8 @@ exports.comment = (req,res,next) =>{
                       {
                         status : false ,
                         error : "USER_ERROR" ,
-                        message : "Impossible de valider votre commentaire, veuillez réessayer ."
-                      })
+                        message : "Impossible de valider votre commentaire, veuillez réessayer ." 
+                      }) 
                 }
 
                 else
@@ -377,8 +385,8 @@ exports.comment = (req,res,next) =>{
                             {
                               status : false ,
                               error : "USER_ERROR" ,
-                              message : "Impossible de valider votre commentaire, veuillez réessayer ."
-                            })
+                              message : "Impossible de valider votre commentaire, veuillez réessayer ." 
+                            }) 
                       }
                       else
                       {
@@ -386,8 +394,8 @@ exports.comment = (req,res,next) =>{
                             {
                               status : true ,
                               error : "INSERT_TRUE" ,
-                              message : "..."
-                            })
+                              message : "..." 
+                            }) 
                       }
                   }) ;
 
@@ -397,6 +405,7 @@ exports.comment = (req,res,next) =>{
         }
 
       })
+      }
 
   }) ;
 
@@ -406,12 +415,15 @@ exports.current_comment_of_poster = (req,res,next) =>{
 
   pool.getConnection((err,connect)=>{
 
-      if(err) res.status(400).
+      if(err) {
+        res.status(400).
         json({status : false ,
           message : "Erreur de connection à la base de donnée" ,
           error : "DB_ERROR"}) ;
+      }
 
-      connect.query('SELECT comment.id_user , comment.msg , comment.id_poster , comment.add_date , users.pseudonyme FROM comment INNER JOIN users ON comment.id_user=users.token WHERE comment.id_poster=?',[req.params.id],(err,rows)=>{
+      else{
+        connect.query('SELECT comment.id_user , comment.msg , comment.id_poster , comment.add_date , users.pseudonyme FROM comment INNER JOIN users ON comment.id_user=users.token WHERE comment.id_poster=?',[req.params.id],(err,rows)=>{
 
           if(err)
           {
@@ -428,6 +440,7 @@ exports.current_comment_of_poster = (req,res,next) =>{
           }
 
       }) ;
+      }
 
   }) ;
 
