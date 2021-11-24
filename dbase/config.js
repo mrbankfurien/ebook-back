@@ -2,7 +2,7 @@ const mysql = require('mysql') ;
 
 require('dotenv').config() ;
 
-const pool = mysql.createConnection({
+const pool = mysql.createPool({
 
 	connectionLimit : process.env.CONECTION_LIMIT ,
 	host            : process.env.DB_HOST,
