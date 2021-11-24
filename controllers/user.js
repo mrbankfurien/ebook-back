@@ -17,7 +17,7 @@ const pool = require('../dbase/config');
 
 exports.signup = (req,res,next) =>{
 
-	pool.getConnection((err,connect) =>{
+	pool.connect((err) =>{
 
 		if(err) {
 			res.status(400).
@@ -27,19 +27,19 @@ exports.signup = (req,res,next) =>{
 		}
 
 		else{
-			connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err,rows)=>{
+			pool.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err,rows)=>{
 			if(!err)
 			{
 				if(rows.length==0)
 				{
 
-					connect.query('SELECT * FROM users WHERE number=?' , [req.body.numbers] , (err , rows)=>{
+					pool.query('SELECT * FROM users WHERE number=?' , [req.body.numbers] , (err , rows)=>{
 
 						if(!err)
 						{
 							if(rows.length==0)
 							{
-								connect.query('SELECT * FROM users WHERE pseudonyme=?' , [req.body.pseudonyme] , (err , rows)=>{
+								pool.query('SELECT * FROM users WHERE pseudonyme=?' , [req.body.pseudonyme] , (err , rows)=>{
 
 									if(!err)
 									{
@@ -48,7 +48,7 @@ exports.signup = (req,res,next) =>{
 											bcrypt.hash(req.body.passwords,10).
 											then(hash=>{
 
-												connect.query('INSERT INTO users SET username = ? , email = ? , number = ? , pseudonyme = ? , gender = ? , passwords = ? , token = ? , add_date = ?' ,
+												pool.query('INSERT INTO users SET username = ? , email = ? , number = ? , pseudonyme = ? , gender = ? , passwords = ? , token = ? , add_date = ?' ,
 												[req.body.username,req.body.email,req.body.numbers,req.body.pseudonyme,req.body.gender , hash , req.body.token ,new Date()] , (err , rows)=>{
 
 
@@ -152,7 +152,7 @@ exports.signup = (req,res,next) =>{
 
 exports.login = (req,res,next) =>{
 
-	pool.getConnection((err , connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -163,7 +163,7 @@ exports.login = (req,res,next) =>{
 
 
 		else{
-			connect.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err , user)=>{
+			pool.query('SELECT * FROM users WHERE email=?' , [req.body.email] , (err , user)=>{
 
 
 			if(err){
@@ -233,7 +233,7 @@ exports.login = (req,res,next) =>{
 
 exports.reset = (req,res,next) =>{
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -243,7 +243,7 @@ exports.reset = (req,res,next) =>{
 		}
 
 		else{
-			connect.query('SELECT * FROM users WHERE email=?',[req.body.email],(err,user)=>{
+			pool.query('SELECT * FROM users WHERE email=?',[req.body.email],(err,user)=>{
 
 			if(err)
 			{

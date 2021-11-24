@@ -2,7 +2,7 @@ const pool = require('../dbase/config');
 
 exports.all = (req,res,next) =>{
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -12,7 +12,7 @@ exports.all = (req,res,next) =>{
 		}
 
 		else{
-			connect.query('SELECT * FROM posters WHERE id_user=? and visibility=? ORDER BY id DESC',[req.params.userId,'Privé'],(err,rows)=>{
+			pool.query('SELECT * FROM posters WHERE id_user=? and visibility=? ORDER BY id DESC',[req.params.userId,'Privé'],(err,rows)=>{
 
 			if(!err)
 			{
@@ -47,7 +47,7 @@ exports.create = (req , res , next) =>{
 	const delais = req.body.delais ? req.body.delais : 'null';
 	const status = req.body.status ? req.body.status : 'null';
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -59,12 +59,12 @@ exports.create = (req , res , next) =>{
 		else{
 			if(req.body.visibility=='Public')
 		{
-			connect.query('INSERT INTO posters SET id_user=?,visibility=?,title=?,msg=?,status=?,unite=?,delais=?,addDate=?' ,
+			pool.query('INSERT INTO posters SET id_user=?,visibility=?,title=?,msg=?,status=?,unite=?,delais=?,addDate=?' ,
 			[req.body.userId,req.body.visibility,req.body.title,req.body.msg,status,unite,delais,new Date()], (err,new_poster_insert)=>{
 
 				if(!err)
 				{
-					connect.query('INSERT INTO poster_descrbile SET id_user=? , id_poster=? , likers=? , loved_counter=? , disloved_counter=? , add_date=?',[req.body.userId,new_poster_insert.insertId,2,2,2,new Date()],(err,rows)=>{
+					pool.query('INSERT INTO poster_descrbile SET id_user=? , id_poster=? , likers=? , loved_counter=? , disloved_counter=? , add_date=?',[req.body.userId,new_poster_insert.insertId,2,2,2,new Date()],(err,rows)=>{
 
 						if(err)
 						{
@@ -78,7 +78,7 @@ exports.create = (req , res , next) =>{
 
 						else
 						{
-						  connect.query('INSERT INTO posters_counters SET id_poster_liked=? , likers_counters=? , dislikers_counters=? , comment_counters=? , add_date=?',[new_poster_insert.insertId,0,0,0,new Date()],(err,rows)=>{
+						  pool.query('INSERT INTO posters_counters SET id_poster_liked=? , likers_counters=? , dislikers_counters=? , comment_counters=? , add_date=?',[new_poster_insert.insertId,0,0,0,new Date()],(err,rows)=>{
 
 										if(!err)
 										{
@@ -118,7 +118,7 @@ exports.create = (req , res , next) =>{
 		}
 		else
 		{
-			connect.query('INSERT INTO posters SET id_user=?,visibility=?,title=?,msg=?,status=?,unite=?,delais=?,addDate=?' ,
+			pool.query('INSERT INTO posters SET id_user=?,visibility=?,title=?,msg=?,status=?,unite=?,delais=?,addDate=?' ,
 			[req.body.userId,req.body.visibility,req.body.title,req.body.msg,status,unite,delais,new Date()], (err,rows)=>{
 
 				if(!err)
@@ -150,7 +150,7 @@ exports.create = (req , res , next) =>{
 
 exports.deleted = (req,res,next) =>{
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -160,7 +160,7 @@ exports.deleted = (req,res,next) =>{
 		}
 
 		else{
-			connect.query('DELETE FROM posters WHERE id=?',[req.params.id],(error,starus)=>{
+			pool.query('DELETE FROM posters WHERE id=?',[req.params.id],(error,starus)=>{
 
 			if(!error)
 			{
@@ -194,7 +194,7 @@ exports.update = (req,res,next) =>{
 	const delais = req.body.delais ? req.body.delais : 'null';
 	const status = req.body.status ? req.body.status : 'null';
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err) {
 			res.status(400).
@@ -204,7 +204,7 @@ exports.update = (req,res,next) =>{
 		}
 
 		else{
-			connect.query('UPDATE posters SET visibility=?,title=?,msg=?,status=?,unite=?,delais=? WHERE id=?',
+			pool.query('UPDATE posters SET visibility=?,title=?,msg=?,status=?,unite=?,delais=? WHERE id=?',
 			[req.body.visibility,req.body.title,req.body.msg,status,unite,delais,req.params.id],
 			(error,status)=>{
 
@@ -236,7 +236,7 @@ exports.update = (req,res,next) =>{
 
 exports.getOnPost = (req,res,next)=>{
 
-	pool.getConnection((err,connect)=>{
+	pool.connect((err)=>{
 
 		if(err)
 			{
@@ -247,7 +247,7 @@ exports.getOnPost = (req,res,next)=>{
 			}
 
 		else{
-			connect.query('SELECT * FROM posters WHERE id=?',[req.params.id],(error,rows)=>{
+			pool.query('SELECT * FROM posters WHERE id=?',[req.params.id],(error,rows)=>{
 
 
 			if(!error)
