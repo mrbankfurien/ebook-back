@@ -4,7 +4,7 @@ exports.lovedPoster = (req,res,next) =>{
 
   const loved = req.body.liked ? req.body.liked : 0 ;
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
     if(err) {
       res.status(400).
@@ -14,7 +14,7 @@ exports.lovedPoster = (req,res,next) =>{
     }
 
     else{
-      pool.query('SELECT * FROM poster_descrbile WHERE id_poster=? and id_user=?',[req.params.id,req.body.userId],(err,rows)=>{
+      connect.query('SELECT * FROM poster_descrbile WHERE id_poster=? and id_user=?',[req.params.id,req.body.userId],(err,rows)=>{
 
       if(err) res.json(
               {
@@ -27,7 +27,7 @@ exports.lovedPoster = (req,res,next) =>{
         {
           if(rows.length==0)
           {
-              pool.query('INSERT INTO poster_descrbile SET id_user=? , id_poster=? , likers=? , loved_counter=? , disloved_counter=? , add_date=?',[req.body.userId,req.params.id,loved, loved ? 1 : 0 , loved ? 0 : 1 ,new Date()],(err,success)=>{
+              connect.query('INSERT INTO poster_descrbile SET id_user=? , id_poster=? , likers=? , loved_counter=? , disloved_counter=? , add_date=?',[req.body.userId,req.params.id,loved, loved ? 1 : 0 , loved ? 0 : 1 ,new Date()],(err,success)=>{
 
 
                 if(err)
@@ -45,7 +45,7 @@ exports.lovedPoster = (req,res,next) =>{
           }
           else
           {
-            pool.query('UPDATE poster_descrbile SET likers=? , loved_counter=? , disloved_counter=?  WHERE id_poster=? and id_user=?',[loved, loved ? 1 : 0 , loved ? 0 : 1 ,req.params.id,req.body.userId],(err,rows)=>{
+            connect.query('UPDATE poster_descrbile SET likers=? , loved_counter=? , disloved_counter=?  WHERE id_poster=? and id_user=?',[loved, loved ? 1 : 0 , loved ? 0 : 1 ,req.params.id,req.body.userId],(err,rows)=>{
 
 
               if(err)
@@ -60,7 +60,7 @@ exports.lovedPoster = (req,res,next) =>{
             }) ;
           }
 
-          pool.query('SELECT * FROM poster_descrbile WHERE id_poster=?',[req.params.id],(err,allLiked)=>{
+          connect.query('SELECT * FROM poster_descrbile WHERE id_poster=?',[req.params.id],(err,allLiked)=>{
 
 
 
@@ -92,7 +92,7 @@ exports.lovedPoster = (req,res,next) =>{
                 }
               });
 
-              pool.query('UPDATE posters_counters SET likers_counters=? , dislikers_counters=? WHERE id_poster_liked=?' , [counterOfLike,counterOfDisLike,req.params.id],(err,success)=>{
+              connect.query('UPDATE posters_counters SET likers_counters=? , dislikers_counters=? WHERE id_poster_liked=?' , [counterOfLike,counterOfDisLike,req.params.id],(err,success)=>{
 
 
 
@@ -133,7 +133,7 @@ exports.lovedPoster = (req,res,next) =>{
 
 exports.user_poster = (req,res,next)=>{
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
     if(err) {
       res.status(400).
@@ -144,7 +144,7 @@ exports.user_poster = (req,res,next)=>{
 
 
       else{
-        pool.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme , users.token ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and users.token=poster_descrbile.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
+        connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme , users.token ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and users.token=poster_descrbile.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
 
 
 
@@ -177,7 +177,7 @@ exports.user_poster = (req,res,next)=>{
 
 exports.all_poster = (req,res,next) =>{
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
       if(err) {
         res.status(400).
@@ -187,7 +187,7 @@ exports.all_poster = (req,res,next) =>{
       }
 
         else{
-          pool.query('SELECT * FROM posters INNER JOIN users ON users.token=posters.id_user WHERE visibility=? ORDER BY posters.id DESC',['Public'],(error,rows)=>{
+          connect.query('SELECT * FROM posters INNER JOIN users ON users.token=posters.id_user WHERE visibility=? ORDER BY posters.id DESC',['Public'],(error,rows)=>{
 
 
 
@@ -220,7 +220,7 @@ exports.all_poster = (req,res,next) =>{
 
 exports.members_poster = (req,res,next)=>{
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
     if(err) {
       res.status(400).
@@ -231,7 +231,7 @@ exports.members_poster = (req,res,next)=>{
 
 
       else{
-        pool.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme  , poster_descrbile.id_user ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and poster_descrbile.id_user!=users.token INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,allLikerPoster)=>{
+        connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme  , poster_descrbile.id_user ,poster_descrbile.likers,poster_descrbile.loved_counter,poster_descrbile.disloved_counter,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN poster_descrbile ON poster_descrbile.id_poster=posters.id and poster_descrbile.id_user!=users.token INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,allLikerPoster)=>{
 
 
         currentUserToLiked  = [] ;
@@ -257,7 +257,7 @@ exports.members_poster = (req,res,next)=>{
 
           if(currentUserToLiked.length==0)
           {
-              pool.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
+              connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , users.pseudonyme,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
 
                 if(!err)
                 {
@@ -284,7 +284,7 @@ exports.members_poster = (req,res,next)=>{
           else
           {
 
-                pool.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , posters.id_user ,users.pseudonyme,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? and posters.id NOT IN (SELECT id_poster FROM poster_descrbile WHERE id_user='+req.params.userId+') ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
+                connect.query('SELECT posters.id , posters.visibility , posters.title , posters.msg, posters.status , posters.unite , posters.delais , posters.addDate , posters.id_user ,users.pseudonyme,posters_counters.likers_counters,posters_counters.dislikers_counters,posters_counters.comment_counters FROM posters INNER JOIN users ON users.token=posters.id_user INNER JOIN posters_counters ON posters_counters.id_poster_liked=posters.id WHERE visibility=? and posters.id_user!=? and posters.id NOT IN (SELECT id_poster FROM poster_descrbile WHERE id_user='+req.params.userId+') ORDER BY posters.id DESC',['Public',req.params.userId],(err,rows)=>{
 
 
                                 if(err)
@@ -330,7 +330,7 @@ exports.members_poster = (req,res,next)=>{
 exports.comment = (req,res,next) =>{
 
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
       if(err) {
         res.status(400).
@@ -340,7 +340,7 @@ exports.comment = (req,res,next) =>{
       }
 
       else{
-        pool.query('INSERT INTO comment SET id_user=? , id_poster=? , msg=? , add_date=?',[req.body.userId,req.body.id,req.body.msg,new Date()],(err,rows)=>{
+        connect.query('INSERT INTO comment SET id_user=? , id_poster=? , msg=? , add_date=?',[req.body.userId,req.body.id,req.body.msg,new Date()],(err,rows)=>{
 
         if(err)
         {
@@ -355,7 +355,7 @@ exports.comment = (req,res,next) =>{
         else
         {
            
-           pool.query('SELECT comment_counters FROM posters_counters WHERE id_poster_liked=?',[req.body.id],(err,rows)=>{
+           connect.query('SELECT comment_counters FROM posters_counters WHERE id_poster_liked=?',[req.body.id],(err,rows)=>{
 
             data = 0 ;
 
@@ -377,7 +377,7 @@ exports.comment = (req,res,next) =>{
                 else
                 {
 
-                  pool.query('UPDATE posters_counters SET comment_counters=? WHERE id_poster_liked=?',[data+1 , req.body.id],(err,success)=>{
+                  connect.query('UPDATE posters_counters SET comment_counters=? WHERE id_poster_liked=?',[data+1 , req.body.id],(err,success)=>{
 
                       if(err)
                       {
@@ -413,7 +413,7 @@ exports.comment = (req,res,next) =>{
 
 exports.current_comment_of_poster = (req,res,next) =>{
 
-  pool.connect((err)=>{
+  pool.getConnection((err,connect)=>{
 
       if(err) {
         res.status(400).
@@ -423,7 +423,7 @@ exports.current_comment_of_poster = (req,res,next) =>{
       }
 
       else{
-        pool.query('SELECT comment.id_user , comment.msg , comment.id_poster , comment.add_date , users.pseudonyme FROM comment INNER JOIN users ON comment.id_user=users.token WHERE comment.id_poster=?',[req.params.id],(err,rows)=>{
+        connect.query('SELECT comment.id_user , comment.msg , comment.id_poster , comment.add_date , users.pseudonyme FROM comment INNER JOIN users ON comment.id_user=users.token WHERE comment.id_poster=?',[req.params.id],(err,rows)=>{
 
           if(err)
           {
