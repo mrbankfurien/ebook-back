@@ -283,3 +283,151 @@ exports.reset = (req,res,next) =>{
 	})
 
 } ;
+
+exports.updateData = (req,res,next) =>{
+
+
+	pool.getConnection((err,connect)=>{
+
+		if(err) {
+			res.status(400).
+			json({status : false ,
+				message : "Erreur de connection à la base de donnée" ,
+				error : "DB_ERROR"}) ;
+		}
+		else{
+
+			connect.query("SELECT * FROM users WHERE token!=?",[req.body.token],(err,rows)=>{
+
+				errorTable = { 	
+					'email'  : {'status':false , 'msg':''} ,
+					'pseudo' : {'status':false , 'msg':''} ,
+					'number' : {'status':false , 'msg':''},
+				} ;
+
+				rows.forEach((el)=>{
+					if(el.email==req.body.email){
+						errorTable['email'] = {'status':true , 'msg':'Cet addresse email appartient déjà à un autre internaute .'} ;
+					}
+				}) ;
+
+				if(errorTable['email']['status']){
+					res.json(
+                      {
+                        status : false ,
+                        error : "EMAIL_ERROR" ,
+                        message : errorTable['email']['msg']
+                      }) ;
+				}
+				else
+				{
+					rows.forEach((el)=>{
+						if(el.pseudonyme==req.body.pseudonyme){
+							errorTable['pseudo'] = {'status':true , 'msg':'Pseudonyme non disponible, veuillé utiliser un autre .'} ;
+						}
+					}) ;
+
+					if(errorTable['pseudo']['status']){
+						res.json(
+	                      {
+	                        status : false ,
+	                        error : "PSEUDO_ERROR" ,
+	                        message : errorTable['pseudo']['msg']
+	                      }) ;
+					}
+					else
+					{
+						rows.forEach((el)=>{
+							if(el.number==req.body.numbers){
+								errorTable['number'] = {'status':true , 'msg':'Ce contact appartient déjà à un autre internaute .'} ;
+							}
+						}) ;
+
+						
+
+						if(errorTable['number']['status']){
+							res.json(
+		                      {
+		                        status : false ,
+		                        error : "NUMBER_ERROR" ,
+		                        message : errorTable['number']['msg']
+		                      }) ;
+						}
+						else
+						{
+							connect.query("UPDATE users SET username=?,email=?,number=?,pseudonyme=? WHERE token=?",[req.body.username,req.body.email,req.body.numbers,req.body.pseudonyme,req.body.token],(err,success)=>{
+
+								if(err)
+								{
+									res.json(
+				                      {
+				                        status : false ,
+				                        error : "UPDATE_ERROR" ,
+				                        message : "Une erreur s'est produite , veuillez réessayer plutard."
+				                      }) ;
+								}
+								else
+								{
+									res.json(
+				                      {
+				                        status : true ,
+				                        error : "UPDATE_SUCCESS" ,
+				                        message : "to update"
+				                      }) ;
+								}
+
+							}) ;
+						}
+
+					}
+				}
+				
+
+			}) ;
+
+
+		}
+
+	}) ;
+
+
+
+}
+
+exports.dataUser = (req,res,next) => {
+
+	pool.getConnection((err,connect)=>{
+
+		if(err) {
+			res.status(400).
+			json({status : false ,
+				message : "Erreur de connection à la base de donnée" ,
+				error : "DB_ERROR"}) ;
+		}
+		else{
+			connect.query("SELECT * FROM users  WHERE token=?",[req.params.token],(err,user)=>{
+
+				if(err)
+				{
+					res.json(
+					{
+						status : false ,
+						error : "REQUEST_ERROR" ,
+						message : "Une erreur est survenu lors de la vérification de vos informations ."
+					}) ;
+				}
+				else
+				{
+					res.json(
+					{
+						status : true ,
+						error : "IS_SUCCESS" ,
+						message : user[0]
+					}) ;
+				}
+			});
+		}
+
+	}) ;
+
+}

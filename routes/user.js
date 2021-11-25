@@ -3,12 +3,12 @@ const router = express.Router();
 
 const auth = require('../middleware/auth') ;
 
-router.use(auth.default);
-
 const userCtrl = require('../controllers/user');
 
-router.post('/signup', userCtrl.signup);
-router.post('/login', userCtrl.login);
-router.post('/reset-password', userCtrl.reset);
+router.get('/data/:token', auth.userApp ,userCtrl.dataUser)
+router.post('/signup',auth.default, userCtrl.signup);
+router.post('/login',auth.default, userCtrl.login);
+router.post('/reset-password',auth.default, userCtrl.reset);
+router.post('/update-data',auth.userApp ,userCtrl.updateData);
 
 module.exports = router;
