@@ -191,19 +191,22 @@ exports.login = (req,res,next) =>{
 							})
 						}
 
-						res.json({
+						else
+						{
+							res.json({
 
-							status : true,
-							userId : user[0].token ,
-							data : user[0] ,
-							token : jwt.sign(
-									{userId : user[0].token} ,
-									'EBOOK_BANKS_KEY',
-									{ expiresIn: '48h' }
-								)
+								status : true,
+								userId : user[0].token ,
+								data : user[0] ,
+								token : jwt.sign(
+										{userId : user[0].token} ,
+										'EBOOK_BANKS_KEY',
+										{ expiresIn: '48h' }
+									)
 
-						}) ;
+							}) ;
 
+						}
 
 					}).catch(()=> res.json({
 						status : false ,
@@ -405,7 +408,7 @@ exports.dataUser = (req,res,next) => {
 				error : "DB_ERROR"}) ;
 		}
 		else{
-			connect.query("SELECT * FROM users  WHERE token=?",[req.params.token],(err,user)=>{
+			connect.query('SELECT * FROM users  WHERE token=?',[req.params.token],(err,user)=>{
 
 				if(err)
 				{
@@ -426,6 +429,95 @@ exports.dataUser = (req,res,next) => {
 					}) ;
 				}
 			});
+		}
+
+	}) ;
+
+}
+
+
+exports.updatePassword= (req,res,next) =>{
+
+
+	pool.getConnection((err,connect)=>{
+
+		if(err) {
+			res.status(400).
+			json({status : false ,
+				message : "Erreur de connection à la base de donnée" ,
+				error : "DB_ERROR"}) ;
+		}
+		else
+		{
+			connect.query('SELECT * FROM users WHERE token=?',[req.params.token],(err,user)=>{
+
+				if(err)
+				{
+					res.json(
+					{
+						status : false ,
+						error : "REQUEST_ERROR" ,
+						message : "Une erreur est survenu lors de la vérification de vos informations ."
+					}) ;
+				}
+				else
+				{
+					bcrypt.compare(req.body.lastPassword , user[0].passwords).
+					then(valid =>{
+
+						if(!valid){
+							res.json({
+								status : false ,
+								error : "LAST_PASSWORD_ERROR" ,
+								message : "Votre ancien mot de passe est incorrect ."
+							})
+						}
+
+						else
+						{
+							bcrypt.hash(req.body.newPassword,10).
+											then(hash=>{
+
+												connect.query('UPDATE users SET passwords=? WHERE token=?' ,
+												[hash,req.params.token] , (err , rows)=>{
+
+
+														if(!err)
+														{
+															res.json(
+															{
+																status : true ,
+																error : "UPDATE_SUCCESS" ,
+																message : "Votre mot de passe a belle et bien été mise à jour ."
+															}) ;
+														}
+														else
+														{
+															res.json(
+															{
+																status : false ,
+																error : "UPDATE_ERROR" ,
+																message : "Une erreur s'est produite lors de la mise à jour, veuillez réessayer plutard."
+															}) ;
+														}
+
+												}) ;
+
+											}).catch(err => res.json( {
+												status : false ,
+												error : "HASH_ERROR",
+												message : "Erreur lors du cryptage du mot de passe "
+											})) ;
+						}
+
+					}).catch(()=> res.json({
+						status : false ,
+						error : "PASSWORD_ERROR" ,
+						message : "Votre mot de passe est incorrect, veuillez réessayer ."
+					}))
+				}
+
+			}) ;
 		}
 
 	}) ;
