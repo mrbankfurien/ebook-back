@@ -397,7 +397,7 @@ exports.updateData = (req,res,next) =>{
 
 }
 
-exports.dataUser = (req,res,next) => {
+/*exports.dataUser = (req,res,next) => {
 
 	pool.getConnection((err,connect)=>{
 
@@ -434,7 +434,7 @@ exports.dataUser = (req,res,next) => {
 	}) ;
 
 }
-
+*/
 
 exports.updatePassword= (req,res,next) =>{
 
