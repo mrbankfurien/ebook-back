@@ -33,13 +33,7 @@ exports.signup = (req,res,next) =>{
 				if(rows.length==0)
 				{
 
-					connect.query('SELECT * FROM users WHERE number=?' , [req.body.numbers] , (err , rows)=>{
-
-						if(!err)
-						{
-							if(rows.length==0)
-							{
-								connect.query('SELECT * FROM users WHERE pseudonyme=?' , [req.body.pseudonyme] , (err , rows)=>{
+					connect.query('SELECT * FROM users WHERE pseudonyme=?' , [req.body.pseudonyme] , (err , rows)=>{
 
 									if(!err)
 									{
@@ -100,28 +94,8 @@ exports.signup = (req,res,next) =>{
 									}
 
 								}) ;
-							}
-							else
-							{
-								res.json(
-								{
-									status : false ,
-									error : "NUMBER_IS_USED" ,
-									message : "Le contact renseigné est déjà connu de nos registres, veuillez réessayer ."
-								}) ;
-							}
-						}
-						else
-						{
-							res.json(
-							{
-								status : false ,
-								error : "REQUEST_ERROR" ,
-								message : "Une erreur est survenu lors de la vérification des informations ."
-							}) ;
-						}
-
-					}) ;
+							
+						
 
 				}
 				else
